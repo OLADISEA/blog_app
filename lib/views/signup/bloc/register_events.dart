@@ -21,3 +21,7 @@ class PasswordEvents extends RegisterEvents{
   PasswordEvents({required this.password});
 }
 
+class SignUpEvents extends RegisterEvents{
+
+}
+
