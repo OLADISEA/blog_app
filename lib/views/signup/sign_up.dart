@@ -42,9 +42,12 @@ class SignUp extends StatelessWidget {
                       context.read<RegisterBloc>().add(
                           PasswordEvents(password: value));
                     }),
-                generalButton('Log In',
+                generalButton('Sign In',
                         () {
-                      //context.read<RegisterBloc>().add(LogInButton());
+                      print('pressed');
+                      print('email is: ${state.email}');
+                      print(state.password);
+                      context.read<RegisterBloc>().add(SignUpEvents());
                     })
 
               ],
