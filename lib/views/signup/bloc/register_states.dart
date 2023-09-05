@@ -15,3 +15,8 @@ class RegisterStates{
     );
   }
 }
+
+class ErrorState extends RegisterStates {
+  final String errorMessage;
+  ErrorState({required this.errorMessage});
+}
