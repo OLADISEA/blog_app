@@ -1,6 +1,7 @@
 import 'package:blog_app/views/login/bloc/login_bloc.dart';
 import 'package:blog_app/views/login/bloc/login_events.dart';
 import 'package:blog_app/views/login/bloc/login_states.dart';
+import 'package:blog_app/views/signup/sign_up.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -38,7 +39,13 @@ class LogIn extends StatelessWidget {
                     print(state.email);
                     context.read<LogInBloc>().add(LogInButton());
                   }
-              )
+              ),
+              generalButton(
+                  'Register', () {
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => const SignUp(),
+                ));
+              })
             ],
           );
         }
