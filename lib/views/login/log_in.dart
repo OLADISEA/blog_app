@@ -1,3 +1,4 @@
+import 'package:blog_app/views/home/home_page.dart';
 import 'package:blog_app/views/login/bloc/login_bloc.dart';
 import 'package:blog_app/views/login/bloc/login_events.dart';
 import 'package:blog_app/views/login/bloc/login_states.dart';
@@ -14,8 +15,16 @@ class LogIn extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: BlocBuilder<LogInBloc,LogInStates>(
+        body: BlocConsumer<LogInBloc,LogInStates>(
+          listener: (context,state){
+            if (state.logInSuccess) {
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => const HomePage()),
+              );
+            }
+          },
         builder: (context,state) {
+          bool logInSuccess = state.logInSuccess;
           return Column(
             children: [
               reusableText('Email'),
@@ -38,7 +47,11 @@ class LogIn extends StatelessWidget {
                     print('log in pressed');
                     print(state.email);
                     context.read<LogInBloc>().add(LogInButton());
-                  }
+                    if(logInSuccess){
+                      print(true);
+                      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=>HomePage()));
+                    }
+                      }
               ),
               generalButton(
                   'Register', () {

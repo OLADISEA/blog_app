@@ -1,12 +1,14 @@
 class LogInStates{
   final String email;
   final String password;
-  LogInStates({this.email='',this.password=''});
+  final bool logInSuccess;
+  LogInStates({this.email='',this.password='',this.logInSuccess=false});
 
-  LogInStates copyWith({String? email, String? password}){
+  LogInStates copyWith({String? email, String? password,bool? logInSuccess}){
       return LogInStates(
           email: email??this.email,
-          password: password??this.password
+          password: password??this.password,
+        logInSuccess: logInSuccess??this.logInSuccess
       );
     }
   }
