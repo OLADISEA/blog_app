@@ -1,8 +1,13 @@
 import 'dart:convert';
+import 'package:blog_app/data/save_user.dart';
 import 'package:http/http.dart';
+
+import 'model/user_model.dart';
 
 class BlogRepository {
   String baseUrl = 'https://schoolinka-test-production.up.railway.app/auth';
+  String baseurl = 'https://schoolinka-test-production.up.railway.app';
+
 
   Future<bool> handleLogIn(String email, String password) async {
     try {
@@ -15,11 +20,15 @@ class BlogRepository {
       );
 
       if (response.statusCode == 200) {
-        //01H9KEM19X2NZHWQXMEP50B32V
         print('Login successful');
         final successJson = json.decode(response.body);
         final successMessage = successJson['message'] as String;
+        final accessToken = successJson['data']['accessToken'];
+        print('access Token is $accessToken');
         print('the success message is $successMessage');
+        //store userID in shared preference
+        fetchUserData(accessToken);
+        //await saveUserId(accessToken);
         return true;
       } else if (response.statusCode == 400) {
         // Unauthorized: This will handle invalid credentials.
@@ -30,7 +39,6 @@ class BlogRepository {
 
         throw Exception(errorMessage);
       }else {
-        // This will handle other error scenarios
         throw Exception(response.reasonPhrase);
       }
     } catch (e) {
@@ -81,10 +89,10 @@ class BlogRepository {
 
       if (response.statusCode == 200) {
         print('LOGGED OUT');
-        // Handle a successful logout (e.g., clear user data, navigate to login screen, etc.).
+        // successful logout such as clearing user data and navigating to login screen, etc.).
       } else if(response.statusCode == 400){
         print('Unable to log out');
-        // Handle logout failure (e.g., show an error message).
+        //logout failure
       }else if(response.statusCode == 403){
         print('FORBIDDEN');
       }
@@ -93,9 +101,38 @@ class BlogRepository {
       }
     } catch (e) {
       print('An error has occurred');
-      // Handle exceptions (e.g., network error, timeout, etc.).
     }
   }
+
+
+  void fetchUserData(String accessToken) async {
+    try {
+      final response = await get(
+        Uri.parse('$baseurl/users/me'),
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+        },
+
+      );
+
+      if (response.statusCode == 200) {
+        final userData = json.decode(response.body);
+        final userId = userData['data']['id'];
+        // return User(
+        //   id: userData['id'],
+        //   name: userData['name'],
+        //   email: userData['email'],
+        // );
+        print(userId);
+        //return userData['id'];
+      } else {
+        throw Exception('Failed to fetch user data');
+      }
+    } catch (e) {
+      throw Exception('Error occurred while fetching user data: $e');
+    }
+  }
+
 
 
 }
