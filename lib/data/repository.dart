@@ -20,15 +20,19 @@ class BlogRepository {
       );
 
       if (response.statusCode == 200) {
-        print('Login successful');
         final successJson = json.decode(response.body);
         final successMessage = successJson['message'] as String;
         final accessToken = successJson['data']['accessToken'];
         print('access Token is $accessToken');
         print('the success message is $successMessage');
-        //store userID in shared preference
-        fetchUserData(accessToken);
-        //await saveUserId(accessToken);
+
+        // Fetch user data
+        final userData = await fetchUserData(accessToken);
+
+        // Save user data to SharedPreferences
+        await SharedPreferencesManager.saveAccessToken(accessToken);
+        await SharedPreferencesManager.saveUserData(userData!);
+
         return true;
       } else if (response.statusCode == 400) {
         // Unauthorized: This will handle invalid credentials.
@@ -82,8 +86,17 @@ class BlogRepository {
 
   Future<void> logout() async {
     try {
+
+      // Retrieve the user ID from shared preferences and Generate the access token
+      final accessToken = await SharedPreferencesManager.getAccessToken();
+      //final userId = await SharedPreferencesManager.getUserData();
+
+
       final response = await post(
-        Uri.parse('$baseUrl/users/:id/logout'),
+        Uri.parse('$baseurl/users/:id/logout'),
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+        },
 
       );
 
@@ -105,7 +118,7 @@ class BlogRepository {
   }
 
 
-  void fetchUserData(String accessToken) async {
+  Future<User?> fetchUserData(String accessToken) async {
     try {
       final response = await get(
         Uri.parse('$baseurl/users/me'),
@@ -117,13 +130,13 @@ class BlogRepository {
 
       if (response.statusCode == 200) {
         final userData = json.decode(response.body);
-        final userId = userData['data']['id'];
-        // return User(
-        //   id: userData['id'],
-        //   name: userData['name'],
-        //   email: userData['email'],
-        // );
-        print(userId);
+        //final userId = userData['data']['id'];
+        return User(
+          id: userData['data']['id'],
+          name: userData['data']['name'],
+          email: userData['data']['email'],
+        );
+        //print(userId);
         //return userData['id'];
       } else {
         throw Exception('Failed to fetch user data');
@@ -132,6 +145,7 @@ class BlogRepository {
       throw Exception('Error occurred while fetching user data: $e');
     }
   }
+
 
 
 
