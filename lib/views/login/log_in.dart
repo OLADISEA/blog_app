@@ -26,39 +26,53 @@ class LogIn extends StatelessWidget {
         builder: (context,state) {
           bool logInSuccess = state.logInSuccess;
           return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              reusableText('Email'),
+              Center(
+                child: reusableText(text: 'Sign In ',size: 20),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 20,bottom: 10,top: 10),
+                child: reusableText(text:'Email'),
+              ),
               reusableTextField('Email',
                       (value) {
                 print(value);
                     context.read<LogInBloc>().add(EmailEvents(email: value));
                   }),
               const SizedBox(height: 10,),
-              reusableText('Password'),
+              Padding(
+                padding: const EdgeInsets.only(left: 20,bottom: 10,top: 10),
+                child: reusableText(text: 'Password'),
+              ),
               reusableTextField('Password',
                       (value) {
                         print(value);
                         context.read<LogInBloc>().add(
                         PasswordEvents(password: value));
                   }),
-              generalButton(
-                  'Log In',
-                      () {
-                    print('log in pressed');
-                    print(state.email);
-                    context.read<LogInBloc>().add(LogInButton());
-                    if(logInSuccess){
-                      print(true);
-                      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=>HomePage()));
-                    }
+              Center(
+                child: generalButton(
+                    'Log In',
+                        () {
+                      print('log in pressed');
+                      print(state.email);
+                      context.read<LogInBloc>().add(LogInButton());
+                      if(logInSuccess){
+                        print(true);
+                        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=>HomePage()));
                       }
+                        }
+                ),
               ),
-              generalButton(
-                  'Register', () {
-                Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => const SignUp(),
-                ));
-              })
+              Center(
+                child: generalButton(
+                    'Register', () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const SignUp(),
+                  ));
+                }),
+              )
             ],
           );
         }
