@@ -5,7 +5,8 @@ class SharedPreferencesManager {
   static const String userIdKey = 'user_id';
   static const String userNameKey = 'user_name';
   static const String userEmailKey = 'user_email';
-  static const String accessTokenKey = 'access_token';
+  static const String refreshTokenKey = 'refresh_token';
+
 
   // Save user data to SharedPreferences
   static Future<void> saveUserData(User user) async {
@@ -14,10 +15,12 @@ class SharedPreferencesManager {
     prefs.setString(userNameKey, user.name);
     prefs.setString(userEmailKey, user.email);
   }
-  // Store access token in SharedPreferences
-  static Future<void> saveAccessToken(String accessToken) async {
+
+
+  // Store refresh token in SharedPreference
+  static Future<void> saveRefreshToken(String refreshToken) async {
     final prefs = await SharedPreferences.getInstance();
-    prefs.setString(accessTokenKey, accessToken);
+    prefs.setString(refreshTokenKey, refreshToken);
   }
 
   // Retrieve user data from SharedPreferences
@@ -34,10 +37,12 @@ class SharedPreferencesManager {
     }
   }
 
-  // Retrieve access token from SharedPreferences
-  static Future<String?> getAccessToken() async {
+
+
+  // Retrieve refresh token from SharedPreferences
+  static Future<String?> getRefreshToken() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(accessTokenKey);
+    return prefs.getString(refreshTokenKey);
   }
 
   // Clear user data from SharedPreferences
@@ -46,7 +51,7 @@ class SharedPreferencesManager {
     prefs.remove(userIdKey);
     prefs.remove(userNameKey);
     prefs.remove(userEmailKey);
-    prefs.remove(accessTokenKey);
+    prefs.remove(refreshTokenKey);
   }
 }
 
