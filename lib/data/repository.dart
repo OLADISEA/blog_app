@@ -23,6 +23,8 @@ class BlogRepository {
         final successJson = json.decode(response.body);
         final successMessage = successJson['message'] as String;
         final accessToken = successJson['data']['accessToken'];
+        final refreshToken = successJson['data']['refreshToken'];
+
         print('access Token is $accessToken');
         print('the success message is $successMessage');
 
@@ -30,8 +32,12 @@ class BlogRepository {
         final userData = await fetchUserData(accessToken);
 
         // Save user data to SharedPreferences
-        await SharedPreferencesManager.saveAccessToken(accessToken);
+        //await generateAccessToken(refreshToken);
         await SharedPreferencesManager.saveUserData(userData!);
+
+        // Save user data to SharedPreferences
+        await SharedPreferencesManager.saveRefreshToken(refreshToken);
+
 
         return true;
       } else if (response.statusCode == 400) {
@@ -88,8 +94,16 @@ class BlogRepository {
     try {
 
       // Retrieve the user ID from shared preferences and Generate the access token
-      final accessToken = await SharedPreferencesManager.getAccessToken();
-      //final userId = await SharedPreferencesManager.getUserData();
+      final refreshToken = await SharedPreferencesManager.getRefreshToken();
+      var accessToken = '';
+      if (refreshToken != null) {
+        accessToken = await generateAccessToken(refreshToken);
+        // Use accessToken as needed
+      } else {
+        // Handle the case when refreshToken is null
+      }
+
+
 
 
       final response = await post(
@@ -133,11 +147,36 @@ class BlogRepository {
         //final userId = userData['data']['id'];
         return User(
           id: userData['data']['id'],
-          name: userData['data']['name'],
+          name: userData['data']['firstName'],
           email: userData['data']['email'],
         );
         //print(userId);
         //return userData['id'];
+      } else {
+        throw Exception('Failed to fetch user data');
+      }
+    } catch (e) {
+      throw Exception('Error occurred while fetching user data: $e');
+    }
+  }
+
+
+  Future<String> generateAccessToken(String refreshToken) async {
+    try {
+      final response = await post(
+        Uri.parse('$baseurl/users/:id/token'),
+        body: {
+          'refreshToken': refreshToken
+        },
+      );
+
+      if (response.statusCode == 201) {
+        final successJson = json.decode(response.body);
+        final successMessage = successJson['message'] as String;
+        final accessToken = successJson['data']['accessToken'];
+        print(successMessage);
+        return accessToken;
+
       } else {
         throw Exception('Failed to fetch user data');
       }
