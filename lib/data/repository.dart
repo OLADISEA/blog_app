@@ -90,24 +90,31 @@ class BlogRepository {
   }
 
 
-  Future<void> logout() async {
+  Future<bool> logout() async {
     try {
-
+      print('Trying to log out');
       // Retrieve the user ID from shared preferences and Generate the access token
+      final userData = await SharedPreferencesManager.getUserData();
+      final userId = userData?.id;
       final refreshToken = await SharedPreferencesManager.getRefreshToken();
+      print(refreshToken);
       var accessToken = '';
       if (refreshToken != null) {
-        accessToken = await generateAccessToken(refreshToken);
+        try {
+          accessToken = await generateAccessToken(refreshToken,userId!);
+          print(accessToken);
+          print('seen access token');
+        }catch(e){
+          print('ERROR FROM GENERATING ACCESS TOKEN');
+        }
+
         // Use accessToken as needed
       } else {
         // Handle the case when refreshToken is null
       }
 
-
-
-
       final response = await post(
-        Uri.parse('$baseurl/users/:id/logout'),
+        Uri.parse('$baseurl/users/$userId/logout'),
         headers: {
           'Authorization': 'Bearer $accessToken',
         },
@@ -116,6 +123,10 @@ class BlogRepository {
 
       if (response.statusCode == 200) {
         print('LOGGED OUT');
+        // Successful logout; clear user data from SharedPreferences
+        await SharedPreferencesManager.clearUserData();
+        return true;
+
         // successful logout such as clearing user data and navigating to login screen, etc.).
       } else if(response.statusCode == 400){
         print('Unable to log out');
@@ -129,6 +140,7 @@ class BlogRepository {
     } catch (e) {
       print('An error has occurred');
     }
+    return false;
   }
 
 
@@ -161,14 +173,15 @@ class BlogRepository {
   }
 
 
-  Future<String> generateAccessToken(String refreshToken) async {
+  Future<String> generateAccessToken(String refreshToken, String userId) async {
     try {
       final response = await post(
-        Uri.parse('$baseurl/users/:id/token'),
+        Uri.parse('$baseurl/users/$userId/token'),
         body: {
-          'refreshToken': refreshToken
+          "refreshToken": refreshToken
         },
       );
+      print('almost');
 
       if (response.statusCode == 201) {
         final successJson = json.decode(response.body);
@@ -177,12 +190,19 @@ class BlogRepository {
         print(successMessage);
         return accessToken;
 
-      } else {
-        throw Exception('Failed to fetch user data');
+      }else if(response.statusCode == 400){
+        print('Bad request');
+
+      }else if(response.statusCode == 404){
+          print('user not found');
+    }
+      else {
+        throw Exception('Failed to fetch user datas');
       }
     } catch (e) {
       throw Exception('Error occurred while fetching user data: $e');
     }
+    return '';
   }
 
 
