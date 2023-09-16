@@ -23,11 +23,23 @@ class HomePage extends StatelessWidget {
           },
           builder: (context,state){
             return Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 generalButton('log out', () {
                   context.read<LogOutBloc>().add(LogOutButton());
                   //Navigator.of(context).push(MaterialPageRoute(builder: (context)=> LogIn()));
-                })
+                }),
+
+                generalButton('Change password', () {
+                  //context.read<LogOutBloc>().add(LogOutButton());
+                  //Navigator.of(context).push(MaterialPageRoute(builder: (context)=> LogIn()));
+                }),
+
+                IconButton(
+                    onPressed: (){
+                      // show a dialog to change user first name. last name, email address and password
+                    },
+                    icon: const Icon(Icons.settings))
               ],
             );
           },
