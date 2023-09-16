@@ -1,3 +1,4 @@
+import 'package:blog_app/views/home/bloc/log_out_bloc/log_out_bloc.dart';
 import 'package:blog_app/views/login/bloc/login_bloc.dart';
 import 'package:blog_app/views/login/log_in.dart';
 import 'package:blog_app/views/signup/bloc/register_bloc.dart';
@@ -22,7 +23,9 @@ class MyApp extends StatelessWidget {
       MultiBlocProvider(
           providers:[
             BlocProvider(create: (context)=> RegisterBloc()),
-            BlocProvider(create: (context)=> LogInBloc())
+            BlocProvider(create: (context)=> LogInBloc()),
+            BlocProvider(create: (context)=> LogOutBloc())
+
           ],
         child: MaterialApp(
           title: 'Flutter Demo',
